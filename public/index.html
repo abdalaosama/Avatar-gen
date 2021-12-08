@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Project</title>
+</head>
+<body>
+    <img src="" alt="">
+    <p></p>
+    <form action="/get_avatar" method="post">
+        <table>
+            <tr>
+                <td>Extra seed :</td>
+                <td><input type="text" id="extra_seed" placeholder="Extra seed"></td>
+            </tr>
+            <tr>
+                <td>background color</td>
+                <td><input type="color" id="background"></td>
+            </tr>
+            <tr>
+                <td>mood :</td>
+                <td><select name="mood" id="mood">
+                    <option value="happy">happy</option>
+                    <option value="sad">sad</option>
+                </select></td>
+            </tr>
+            <tr>
+                <td>style :</td>
+                <td><select name="style" id="style">
+                    <option value="Adventurer">Adventurer</option>
+                    <option value="Adventurer-Neutdal">Adventurer-Neutdal</option>
+                    <option value="Avataaars">Avataaars</option>
+                    <option value="Big-Ears">Big-Ears</option>
+                    <option value="Big-Ears-Neutdal">Big-Ears-Neutdal</option>
+                    <option value="Big-Smile">Big-Smile</option>
+                    <option value="Bottts">Bottts</option>
+                    <option value="Croodles">Croodles</option>
+                    <option value="Croodles-Neutdal">Croodles-Neutdal</option>
+                    <option value="Female">Female</option>
+                    <option value="Gridy">Gridy</option>
+                    <option value="Human">Human</option>
+                    <option value="Identicon">Identicon</option>
+                    <option value="Initials">Initials</option>
+                    <option value="Jdenticon">Jdenticon</option>
+                    <option value="Male">Male</option>
+                    <option value="Micah">Micah</option>
+                    <option value="Miniavs">Miniavs</option>
+                    <option value="Open-Peeps">Open-Peeps</option>
+                    <option value="Personas">Personas</option>
+                    <option value="Pixel-Art">Pixel-Art</option>
+                    <option value="Pixel-Art-Neutdal">Pixel-Art-Neutdal</option>
+                </select></td>
+            </tr>
+            
+        </table>
+
+    </form>
+    <h1>your seed :</h1>
+    <p>{discord_username:extraseed}</p>
+    <button>Get your Avatar</button>
+</body>
+</html>
