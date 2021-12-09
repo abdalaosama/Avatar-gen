@@ -5,30 +5,77 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Final Project</title>
+
+    <style>
+        body {
+            text-align: center;
+            background-color: rgb(241, 241, 241);
+            background-image: url(img/background.jpg);
+            background-size: 500px;
+
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+        .bold{
+            font-weight: bold;
+        }
+
+        #header-img{
+            width: 40vw;
+        }
+        form {
+            display: inline-block;
+        }   
+        .left{
+            text-align: left;
+        }
+        .right{
+            text-align: right;
+        }
+        #act-btn{
+            width: 40vw;
+            height: 50px;
+            background: #5865F2;
+            color: #FFFFFF;
+            font-size: 20px;
+            font-family: Helvetica, sans-serif;
+            border: none;
+            border-radius: 4px;
+            box-shadow: 3px 3px 5px 1px black, -3px -3px 5px 1px white, 0px 0px 0px 0px black inset, 0px 0px 0px 0px white inset ;
+            cursor: pointer;
+            transition: 0.3s ;
+        }
+        #act-btn:hover{
+            background: #5460e2;
+            box-shadow: 0px 0px 0px 0px black, 0px 0px 0px 0px white, 3px 3px 5px 1px black inset, 0px 0px 2px 3px rgba(255, 255, 255, 0.534) inset ;
+        }
+        .vw40{
+            width: 40vw;
+        }
+    </style>
 </head>
 <body>
-    <img src="" alt="">
-    <p></p>
+    <img src="img/header.png" alt="header image: Discord  Dice-bear Logos, Final Project, Avatar Genrator" id="header-img">
+    <p class="bold">Genrate an Avatar image using your discord username</p>
     <form action="/get_avatar" method="post">
-        <table>
+        <table class="vw40">
             <tr>
-                <td>Extra seed :</td>
-                <td><input type="text" id="extra_seed" placeholder="Extra seed"></td>
+                <td class="left">Extra seed :</td>
+                <td class="right"><input type="text" id="extra_seed" oninput="changeSeed()" placeholder="Extra seed"></td>
             </tr>
             <tr>
-                <td>background color</td>
-                <td><input type="color" id="background"></td>
+                <td class="left">background color :</td>
+                <td class="right"><input type="color" id="background" value="#ffffff"></td>
             </tr>
             <tr>
-                <td>mood :</td>
-                <td><select name="mood" id="mood">
+                <td class="left">mood :</td>
+                <td class="right"><select name="mood" id="mood">
                     <option value="happy">happy</option>
                     <option value="sad">sad</option>
                 </select></td>
             </tr>
             <tr>
-                <td>style :</td>
-                <td><select name="style" id="style">
+                <td class="left">style :</td>
+                <td class="right"><select name="style" id="style">
                     <option value="Adventurer">Adventurer</option>
                     <option value="Adventurer-Neutdal">Adventurer-Neutdal</option>
                     <option value="Avataaars">Avataaars</option>
@@ -44,7 +91,7 @@
                     <option value="Identicon">Identicon</option>
                     <option value="Initials">Initials</option>
                     <option value="Jdenticon">Jdenticon</option>
-                    <option value="Male">Male</option>
+                    <option value="Male" selected>Male</option>
                     <option value="Micah">Micah</option>
                     <option value="Miniavs">Miniavs</option>
                     <option value="Open-Peeps">Open-Peeps</option>
@@ -57,8 +104,14 @@
         </table>
 
     </form>
-    <h1>your seed :</h1>
-    <p>{discord_username:extraseed}</p>
-    <button>Get your Avatar</button>
+    <h2 class="bold">your seed is :</h2>
+    <p class="bold" style="color: red;" id="seed">{discord_username} : Extra_seed</p>
+    <button id="act-btn" class="bold">Login Using Discord</button>
+
+    <script>
+        function changeSeed(){
+            document.getElementById('seed').innerHTML = `{discord_username}:${document.getElementById('extra_seed').value}`
+        }
+    </script>
 </body>
 </html>
