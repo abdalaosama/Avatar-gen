@@ -74,6 +74,11 @@ cache_manager = {
         
         const sessionIndex = data.findIndex( x => x.session_key == sessionKey);
 
+        if(sessionIndex < 0){ // if session doesn't exist 
+          cache_manager.addSession(sessionKey, newUserData);
+          return
+        }
+
         Object.keys(newUserData).forEach(Key => {// to overwrite indivisual fields of userData
           data[sessionIndex].user_data[Key] = newUserData[Key];
         });

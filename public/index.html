@@ -56,11 +56,19 @@
 <body>
     <img src="img/header.png" alt="header image: Discord  Dice-bear Logos, Final Project, Avatar Genrator" id="header-img">
     <p class="bold">Genrate an Avatar image using your discord username</p>
-    <form action="/get_avatar" method="post">
+    <form action="/get_avatar" method="GET" enctype="application/x-www-form-urlencoded">
         <table class="vw40">
             <tr>
+                <td class="left">seed :</td>
+                <td class="right"><select type="text" id="main_seed" oninput="changeSeed()" placeholder="Extra seed">
+                    <option value="Discord_username">Discord username</option>
+                    <option value="Discord_avatar_hash">Current profile image hash</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <td class="left">Extra seed :</td>
-                <td class="right"><input type="text" id="extra_seed" oninput="changeSeed()" placeholder="Extra seed"></td>
+                <td class="right"><input type="text" id="extra_seed" oninput="changeSeed()" placeholder="Extra seed" value="Extra_seed"></td>
             </tr>
             <tr>
                 <td class="left">background color :</td>
@@ -76,28 +84,28 @@
             <tr>
                 <td class="left">style :</td>
                 <td class="right"><select name="style" id="style">
-                    <option value="Adventurer">Adventurer</option>
-                    <option value="Adventurer-Neutdal">Adventurer-Neutdal</option>
-                    <option value="Avataaars">Avataaars</option>
-                    <option value="Big-Ears">Big-Ears</option>
-                    <option value="Big-Ears-Neutdal">Big-Ears-Neutdal</option>
-                    <option value="Big-Smile">Big-Smile</option>
-                    <option value="Bottts">Bottts</option>
-                    <option value="Croodles">Croodles</option>
-                    <option value="Croodles-Neutdal">Croodles-Neutdal</option>
-                    <option value="Female">Female</option>
-                    <option value="Gridy">Gridy</option>
-                    <option value="Human">Human</option>
-                    <option value="Identicon">Identicon</option>
-                    <option value="Initials">Initials</option>
-                    <option value="Jdenticon">Jdenticon</option>
-                    <option value="Male" selected>Male</option>
-                    <option value="Micah">Micah</option>
-                    <option value="Miniavs">Miniavs</option>
-                    <option value="Open-Peeps">Open-Peeps</option>
-                    <option value="Personas">Personas</option>
-                    <option value="Pixel-Art">Pixel-Art</option>
-                    <option value="Pixel-Art-Neutdal">Pixel-Art-Neutdal</option>
+                    <option value="adventurer">Adventurer</option>
+                    <option value="adventurer-neutdal">Adventurer-Neutdal</option>
+                    <option value="avataaars">Avataaars</option>
+                    <option value="big-rars">Big-Ears</option>
+                    <option value="big-rars-neutdal">Big-Ears-Neutdal</option>
+                    <option value="big-smile">Big-Smile</option>
+                    <option value="bottts">Bottts</option>
+                    <option value="croodles">Croodles</option>
+                    <option value="croodles-neutdal">Croodles-Neutdal</option>
+                    <option value="female">Female</option>
+                    <option value="gridy">Gridy</option>
+                    <option value="human">Human</option>
+                    <option value="identicon">Identicon</option>
+                    <option value="initials">Initials</option>
+                    <option value="jdenticon">Jdenticon</option>
+                    <option value="male" selected>Male</option>
+                    <option value="micah">Micah</option>
+                    <option value="miniavs">Miniavs</option>
+                    <option value="open-peeps">Open-Peeps</option>
+                    <option value="personas">Personas</option>
+                    <option value="pixel-art">Pixel-Art</option>
+                    <option value="pixel-art-neutdal">Pixel-Art-Neutdal</option>
                 </select></td>
             </tr>
             
@@ -105,13 +113,38 @@
 
     </form>
     <h2 class="bold">your seed is :</h2>
-    <p class="bold" style="color: red;" id="seed">{discord_username} : Extra_seed</p>
+    <p class="bold" style="color: red;" id="seed">{Discord_username}:Extra_seed</p>
     <button id="act-btn" class="bold">Login Using Discord</button>
 
     <script>
         function changeSeed(){
-            document.getElementById('seed').innerHTML = `{discord_username}:${document.getElementById('extra_seed').value}`
+            document.getElementById('seed').innerHTML = `{${document.getElementById('main_seed').value}}:${document.getElementById('extra_seed').value}`
         }
+
+        document.getElementById('act-btn').addEventListener('click', (e) =>{
+            //Do Post to /get_avatar
+            const PostData = {
+                main_seed : document.getElementById('main_seed').value,
+                extra_seed : document.getElementById('extra_seed').value,
+                background : document.getElementById('background').value,
+                mood:  document.getElementById('mood').value,
+                style: document.getElementById('style').value
+            }
+
+            fetch("/get_avatar", {
+              method: "POST",
+              headers: {'Content-Type': 'application/json'} ,
+              body: JSON.stringify(PostData)
+            }).then(res => {
+                res.text().then(x => {
+                    const url = x
+                    window.location.href = url
+                })
+              
+            });
+            
+        })
+
     </script>
 </body>
 </html>
