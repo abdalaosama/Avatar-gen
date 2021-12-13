@@ -13,8 +13,8 @@ module.exports = {
 
     //Register you Application from 
     //https://discord.com/developers/applications
-    client_id:"918140752792526848",
-    client_secret:"1K3ZmHMa0kJiTJPcZ7OP6DW452noVZAH", // as the name implies, this must stay a secret
+    client_id:"",
+    client_secret:"", // as the name implies, this must stay a secret
 
     discord_api_domain: "https://discord.com",
     base_Oauth_endpoint: "/api/oauth2/authorize",
