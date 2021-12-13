@@ -62,16 +62,18 @@ class WebServer {
         console.log(`Server started @ ${config.domain}:${config.port}/`);
     }
 
-    send404(resp){
+    send404(resp, ErrorHandler = undefined){
         fs.readFile('./public/404.html', function(error, content) {
+            if(error) { ErrorHandler( error )}
+
             resp.writeHead(404, { 'Content-Type': "text/html" });
             resp.end(content, 'utf-8');
         });
     }
 
-    send200File(resp, file){
+    send200File(resp, file, ErrorHandler){
         fs.readFile(file, function(error, content) {
-            if(error) {return this.send404(resp);}
+            if(error) { ErrorHandler( error )}
 
             resp.writeHead(200, { 'Content-Type': "text/html" });
             resp.end(content, 'utf-8');
@@ -80,6 +82,11 @@ class WebServer {
 
     sendMessage(resp, message){
         resp.writeHead(200, { 'Content-Type': "text/html" });
+        resp.end(message, 'utf-8');
+    }
+    
+    respond(resp, StatusCode, message){
+        resp.writeHead(StatusCode, { 'Content-Type': "text/html" });
         resp.end(message, 'utf-8');
     }
 }
@@ -109,7 +116,7 @@ module.exports.client = {
           })
           
           req.on('error', error => {
-            throw error
+            callBack(undefined, error )
           })
           
           req.write( data )
@@ -138,6 +145,7 @@ module.exports.client = {
           
           req.on('error', error => {
             console.error(error)
+            callBack(undefined, error)
           })
           
           req.end()
