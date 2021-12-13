@@ -118,7 +118,7 @@ WebServer.register('/get_avatar', (req,resp) => {
                 console.log(`state_hash = ${state_hash}`);
 
                 resp.writeHead(200,{"Content-Type":"text/plain",'Set-Cookie': `state=${state_hash}`})
-                resp.end(`${config.discord_api_domain}${config.base_Oauth_endpoint}?response_type=code&client_id=${config.client_id}&scope=${config.scopes_needed}&state=${state_hash}&redirect_uri=${config.callBackURI}&prompt=consent`, 'utf-8')
+                resp.end(`${config.discord_api_domain}${config.base_Oauth_endpoint}?response_type=code&client_id=${config.client_id}&scope=${config.scopes_needed}&state=${state_hash}&redirect_uri=${config.callBackURI}&prompt=none`, 'utf-8')
             } catch (error) {
                 console.log(error)
                 return WebServer.respond(resp, 500, 'Internal Server Error: Please try again later <a href="\/">go Back</a>');
@@ -163,12 +163,17 @@ WebServer.register('/get_avatar', (req,resp) => {
                     //make second api call using userdata
                     const path = `/api/${session.user_data.style}/${(session.user_data.main_seed=="Discord_username"?`${encodeURI( FirstReqData.username )}:${encodeURI(session.user_data.extra_seed)}`:`${encodeURI(FirstReqData.avatar)}:${encodeURI(session.user_data.extra_seed)}`)}.svg?background=${session.user_data.background.replace('#', "%23")}&mood=${session.user_data.mood}`;
                     client.get("avatars.dicebear.com", path,{}, (SecondReqData, err) => {
-                        if(err){ return WebServer.respond(resp, 500, 'Internal Server Error, Second Request failed, Couldn\'t Fetch avatar from Dicebear, <a href="\/">go Back</a>')}
-                        //cache the svg file from second api call
-                        fs.writeFileSync(`./cached_avatars/${GETparams.state}.svg`, SecondReqData, () => {return});
-                        // send Redirect to /show_avatar
-                        resp.writeHead(302, { 'Content-Type': "text/html", "location":"/show_avatar" });
-                        resp.end("success", 'utf-8');
+
+                        try{
+                            if(err){ return WebServer.respond(resp, 500, 'Internal Server Error, Second Request failed, Couldn\'t Fetch avatar from Dicebear, <a href="\/">go Back</a>')}
+                            //cache the svg file from second api call
+                            fs.writeFileSync(`./cached_avatars/${GETparams.state}.svg`, SecondReqData, () => {return});
+                            // send Redirect to /show_avatar
+                            resp.writeHead(302, { 'Content-Type': "text/html", "location":"/show_avatar" });
+                            resp.end("success", 'utf-8');
+                        }catch(err){
+                            WebServer.respond(resp, 404, 'your session cookies are invalid, <a href="\/">go Back</a>') 
+                        }
                     });
                     
                 })

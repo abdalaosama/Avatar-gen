@@ -1,0 +1,67 @@
+title Discord + Dice-bear Avatar Generator
+
+participant Dicebear API
+participant Discord API
+participant user
+participant server
+
+
+user ->(1) server:(GET) Requests "/" root Directory 
+server -->(1) user: "200 OK" and sends index.html\nwith a from for the user to fill
+
+user ->(1) server:(POST) user fills form and send POST\nrequest to "/get_avatar"+ form Data
+
+note over server:server validates form data, creates\n**state**, stores **state** and form data,\nthen redirects
+
+server -->(1)user:"302" redirect to discord's\n Auth url+ set **state** cookies +\n {client_ID + required scopes +**state**}
+
+user ->(1)Discord API:(GET) Browser redirects automatically to Discord Oauth URL +\n {client_ID + required scopes + **state**}.
+
+alt shorcuted if the user authenticated with discord earlier and gave access
+Discord API -->(1)user: responds with Login form HTML
+note right of Discord API:user login to Discord
+
+user ->(1)Discord API:user fills login form and submits it
+
+Discord API -->(1) user:asks for user permission to allow our app to access his data
+
+note right of Discord API:Discord asks user permission\nto allow our app to access\nhis user data, user accepts
+user->(1)Discord API: User accpets 
+end 
+Discord API -->(1)user: Discord redirects user to our Callback URL "/get_avatar",\n sends {code, **state**} in GET query strings parametrs
+
+user ->(1)server: (GET) Browser redirects to "/get_avatar"\nforwarding {code, **state**}\nInto our server.
+
+note over server: server uses **state** to lookup\n user data
+
+alt doesn't happen if we have cached the **access_token** and it is not-expired 
+server ->(1)Discord API: (POST) sends {client_id, client_secret, code} in Request body;\n to exchange for user token
+
+Discord API -->(1)server:Everything Checks out, Discord sends {access_token, expiry_time , refresh_token }
+note over server: server caches the **access_token** \n,refresh_token, and expiry_time
+end 
+
+
+server ->(1) Discord API:(FIRST API REQUEST)(GET) Server uses access_token to request\n user's information from the discord api on endpoint "/users/@me", based\n on the data supplied by the user and cached earlier.
+
+Discord API -->(1)server:Responds with user information {avatar_hash, username, ..etc}
+
+note over server:Server stores it with other user data
+
+server ->(1)Dicebear API:(SECOND API REQUEST)(GET) Requests User avatar + {Seed, style, backgound-color, mood}\n
+Dicebear API -->(1)server: Sends back SVG File content of the avatar
+note over server: server caches the file and stores it path with the user data
+
+server -->(1)user: sends redirect to user "/show_avatar".
+user ->(1)server: (GET) user requests "/show_avatar"
+server -->(1)user: Server sends html file
+user ->(1)server: (GET) html requests avatar File \ncontents from server
+server -->(1)user: responds with the cached .svg file conent 
+note over user:browser displays avatar and allows user to download it or go back to "/"
+
+
+
+
+
+
+
