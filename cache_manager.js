@@ -38,7 +38,7 @@ cache_manager = {
         })  
       }
       catch(err){
-        throw err
+        callback(undefined, err)
       }
     },
 
@@ -94,6 +94,26 @@ cache_manager = {
         fs.writeFile(config.cacheFile, JSON.stringify( data ), ()=> {return})
       })  
     },
+
+    isTokenValid: (sessionKey, callback) => { // checks for token expiry time
+      cache_manager.validateCache();
+      cache_manager.getSession(sessionKey, ( session ) => {
+
+        if (session == undefined ){
+          return callback( false, new Error("no session") ) 
+        }
+
+        if(session.user_data.access_token == undefined){
+          return callback( false, undefined, session ) 
+        }
+
+        if ( Math.floor(Date.now() / 1000) > session.user_data.expires_in + session.user_data.tokenCreatedAt ){ // If current time has passed the expiry time
+          return callback( false ,undefined, session );
+        }
+        return callback( true , undefined, session);
+      })
+
+    }
 
 }
 
