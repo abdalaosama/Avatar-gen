@@ -1,0 +1,88 @@
+1-1.
+we use this endpoint from the discord API. we provide it with an access_token, then it will return data about the authenticated user, here is an example of the data (id, name, avatar_hash).
+we will use this data to generate a seed. then we use dice bear API, we will provide parameters of the avatar like the seed, background color, mood, and style then the API will return an SVG file of the avatar.
+
+1-2.
+the discord ap
+i is called first we generate the seed from its response, then the dicebear api is called second
+2-1.
+looking under the hood, this is a summary of all HTTP requests and communications made between all parties
+
+First off the user makes a GET request to our server root endpoint. our server responds with an HTML form for the user to fill.
+
+ the user fills it then presses "submit & login with discord" button.
+the  javascript in the page will use ajax to make a POST request to our  "/get_avatar" endpoint on our server, submitting the form data in the request body as JSON. 
+
+our server will validate the form data,  generate a state random 20 chars hexadecimal to string, the it store the state and form data,
+
+it will send a redirect to discord, it will forward the client id, the required scopes, the state, and callback URI as query string parameters.
+the browser will redirect to "api/oauth2/authorize" endpoint forwarding the client Id required scopes, state, and the callback URL as query string parameters.
+The discord server will log in the user then ask him if he wanted to give our app access to his data. The user accepts,
+ discord redirect’s him to the call back URL we provided earlier + it will forward the “code” and state as query string parameters
+the user's browser will make the redirect forwarding the query string parameters to our server.
+The server will now lookup for that user data. If it exists and it is not expired then we will use the cached  “access_token” if it is not valid. Then our server will do the exchange. By doing a POST request to discord’s “api/oauth2/token” endpoint and putting the “client_id”, “client_secret” and the “code” received earlier in the request body as “x-www-form-urlencoded” formated data.
+
+If the code is valid the discord server will return an “access_token” which our server will store and use to access the user’s dat
+
+then our server will do the First API Request.
+Then our server will do a GET Request to discord server to get the username from the "/users/@me" endpoint, store the response, then it will generate the seed,
+ which it will use to submit the second API request to dice bear API.
+which will respond with an SVG file
+Our server will save the SVG file to the "cached_avatars" folder
+then Our server will then redirect the user to “/show_avatar” endpoint, which will serve an HTML file that shows the avatar. The HTML file will request the avatar image from “/avatar” which will serve the SVG file of the authenticated user.
+the browser then displays the avatar and allows him to save it or go back to the root endpoint and start again..
+
+3-0.
+I have split my code into multiple files, each having its utility, to facilitate debugging and refactoring code if needed.
+Main File (server.js)
+Is the entry file, controls the flow of the program, has the most code in it.
+Custom Server Module 	(customHttp.js) :
+Manages server routing and has some helper function for making responses and Manages an HTTP-client
+Cache_manager			(cache_manager.js):
+As apparent from the name, manages cache read, write, update, delete operation, also has some helper functions
+Cookies				(cookiesHandler.js):
+Has function to serialize and deserialize cookies
+ 
+
+3-1.
+we register the root url and when a user sends a request our callback gets called. we send 200 ok and a file through the "send200File" function.   if any errors happen, we send a 500 and send a message to the user.
+ going to the send200File function, this function read the file from the system, then it writes it to the resp object, if an error happens it will call the error handler function we specified
+3-2.
+ The user provides the following data only from the homepage from:
+The main-seed choice between (username, current avatar hash)
+Extra seed “just for if the user wanted another avatar without having to change his settings”
+Background color “background color behind the avatar”
+The mood of the avatar: “sad or happy”
+Style of the avatar: “indicates the style of art for the avatar”
+
+3-3.
+the button click sends a post request to  "/get_avatar" endpoint. we listen for the 'data' event to be emitted. then add the data to the body variable here.
+on the last data emitted the 'end' event is emitted. where we parse the JSON body data.
+
+3-4.
+after parsing the input we do some validation, to make sure the parameters exist and it is valid. we parse the cookies and make sure the state cookie is present or we generate a new state.
+
+3-5.
+after the user is redirected back to our server on the "/get_avatar" endpoint, we get an access_token, either from the cache or do an exchange to the discord token exchange endpoint using the code parameters passed by the user via a POST Request, after the  access_token is successfully fetched. we make a GET request to "/users/@me" endpoint. to get the username and avatar hash, attaching the access_token to the "authorization" header. when we get the resp back, we make sure the request didn't fail then we cache the data from the first request.
+
+4-1.
+now we are going to run the project, 
+running "node server.js" on cmd
+server started on localhost:3000.
+we set options for the avatar form here.
+then we submit the form.
+we wait for it to load.
+as you can see here. we need to log in using discord.
+it asks us to allow the app to access our data
+after that it redirects us to the "/show_avatar" endpoint.
+it redirects us to the "/get_avatar" endpoint first, but the server responds quickly and redirects us to here. we can make sure that our server is resilient to various inputs. we can go to an unregistered directory. it would say "file not found". we can try other things as well. 
+like going to "/get_avatar" without using the code or state parameters.
+you will see "token invalid"
+
+5-1.
+ the second API call needs data from the First API call. The dice bear-API needs the username (or avatar hash) from discord API to happen..
+Also the second api call happens in the callback of the first api call, so they are happening synchronously not asynchronously
+
+5-2
+ we cache the parameters the user provides in the form on the homepage, we also cache the access_token, refresh_token, and the state variable of the user, we also cache the data coming from every request. Like all the other options from the discord call. And from the exchange of the code for an access_token.
+. well, I can see my app showing the old cached avatar in case the form data was malformed or if the second API request failed. well, I am thinking maybe we can check the time when the file was cached and set an expiry time on it. If it was expired we would either inform the user or request a new one directly, also if the user revokes the app access while the access_token is not yet expired the app will use it, but because of the error, it will discard the expired token
