@@ -1,10 +1,10 @@
 # Avatar-gen Final Project
 <hr>
-pre-requirments:
-- node v14.16.0 (or newer)
+pre-requirments:<br>
+ - node v14.16.0 (or newer)
 
-to run please do the following:
-1 - register a discord app throught the developer portal (https://discord.com/developers/applications)
+to run please do the following:<br>
+1 - register a discord app throught the developer portal (https://discord.com/developers/applications)<br>
 
 2 - add the callback URL to the discord app. ( the link that the user will be redirected to after access is granted)
 
