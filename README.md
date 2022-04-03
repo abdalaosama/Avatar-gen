@@ -1,5 +1,5 @@
-"# Avatar-gen Final Project" 
-
+# Avatar-gen Final Project
+<hr>
 pre-requirments:
 - node v14.16.0 (or newer)
 
