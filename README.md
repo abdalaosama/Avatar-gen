@@ -1,4 +1,6 @@
 # Avatar-gen Final Project
+This is a project which uses The Discord API and Dicebear API to generate an avatar image based on your discord username <br>
+
 <hr>
 pre-requirments:<br>
  - node v14.16.0 (or newer)
@@ -10,4 +12,4 @@ to run please do the following:<br>
 
 3 - get the clien_id & client_secret & the redirect URL and fill them in the "config.js" file 
 
-4 - to run the app run `node server.js` in the script directory
+4 - to run the app run `node server.js` in the project directory
